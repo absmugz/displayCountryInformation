@@ -5,7 +5,7 @@
  * @format
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type {PropsWithChildren} from 'react';
 import { Provider } from 'react-redux';
@@ -19,6 +19,8 @@ import {
   Text,
   useColorScheme,
   View,
+  Modal,
+  TouchableOpacity
 } from 'react-native';
 
 import {
@@ -66,6 +68,14 @@ function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
   const dispatch = useDispatch();
 
+  const [selectedCountry, setSelectedCountry] = useState(null);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const handleCountryPress = (country) => {
+    setSelectedCountry(country);
+    setIsModalVisible(true);
+  };
+
   // const state = useSelector((state) => state);
   const c = useSelector((state) => state.countries);
   useEffect(() => {
@@ -91,10 +101,28 @@ function App(): React.JSX.Element {
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={backgroundStyle.backgroundColor}
       />
+      
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         style={backgroundStyle}>
         <Header />
+        <Modal
+  animationType="slide"
+  transparent={true}
+  visible={isModalVisible}
+  onRequestClose={() => setIsModalVisible(false)}
+>
+  <View style={styles.modalView}>
+    <Text style={styles.modalText}>Country: {selectedCountry?.name}</Text>
+    <Text style={styles.modalText}>Code: {selectedCountry?.code}</Text>
+    <TouchableOpacity
+      style={styles.buttonClose}
+      onPress={() => setIsModalVisible(false)}
+    >
+      <Text style={styles.textStyle}>Close</Text>
+    </TouchableOpacity>
+  </View>
+</Modal>
         <View
           style={{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
@@ -107,7 +135,7 @@ function App(): React.JSX.Element {
           <FlatList
              data={c.countries}
               keyExtractor={item => item.code}
-              renderItem={({ item }) => <Country item={item} />}
+              renderItem={({ item }) => <Country item={item} onPress={handleCountryPress}/>}
             />
           </Section>
           <Section title="See Your Changes">
@@ -126,7 +154,39 @@ function App(): React.JSX.Element {
   );
 }
 
+
+
 const styles = StyleSheet.create({
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center"
+  },
+  buttonClose: {
+    backgroundColor: "#2196F3",
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center"
+  },
   sectionContainer: {
     marginTop: 32,
     paddingHorizontal: 24,

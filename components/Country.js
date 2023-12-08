@@ -1,13 +1,13 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
-const Country = ({ item }) => {
+const Country = ({ item, onPress }) => {
   const handlePress = () => {
     console.log('Selected Country:', item.name);
   };
 
   return (
-    <TouchableOpacity onPress={handlePress} style={styles.card}>
+    <TouchableOpacity onPress={() => onPress(item)} style={styles.card}>
       <View style={styles.cardContent}>
         <Text style={styles.cardText}>{item.name} ({item.code})</Text>
       </View>
