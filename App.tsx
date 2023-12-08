@@ -5,9 +5,13 @@
  * @format
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import type {PropsWithChildren} from 'react';
+import { Provider } from 'react-redux';
+import store from './store/configureStore';
 import {
+  FlatList,
   SafeAreaView,
   ScrollView,
   StatusBar,
@@ -24,6 +28,9 @@ import {
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+
+import Country from './components/Country';
+import { fetchCountries } from './slices/countriesSlice';
 
 type SectionProps = PropsWithChildren<{
   title: string;
@@ -57,10 +64,26 @@ function Section({children, title}: SectionProps): React.JSX.Element {
 
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
+  const dispatch = useDispatch();
 
+  // const state = useSelector((state) => state);
+  const c = useSelector((state) => state.countries);
+  useEffect(() => {
+    dispatch(fetchCountries());
+    console.log('Countries from Redux:', c.countries);
+  }, []);
+
+ 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
+
+
+  const countries = [
+    { name: 'United States', code: 'US' },
+    { name: 'Canada', code: 'CA' },
+  ];
+  
 
   return (
     <SafeAreaView style={backgroundStyle}>
@@ -79,6 +102,13 @@ function App(): React.JSX.Element {
           <Section title="Step One">
             Edit <Text style={styles.highlight}>App.tsx</Text> to change this
             screen and then come back to see your edits.
+          </Section>
+          <Section title="Sample Country">
+          <FlatList
+             data={c.countries}
+              keyExtractor={item => item.code}
+              renderItem={({ item }) => <Country item={item} />}
+            />
           </Section>
           <Section title="See Your Changes">
             <ReloadInstructions />
