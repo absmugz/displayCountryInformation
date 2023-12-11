@@ -14,14 +14,19 @@ To start Metro, run the following command from the _root_ of your React Native p
 # using npm
 npm start
 
-# run test
-npm test
-
 # OR using Yarn
 yarn start
 ```
+## Step 2: Run Tests
 
-## Step 2: Start your Application
+```bash
+
+# run test
+npm test
+
+```
+
+## Step 3: Start your Application
 
 Let Metro Bundler run in its _own_ terminal. Open a _new_ terminal from the _root_ of your React Native project. Run the following command to start your _Android_ or _iOS_ app:
 
@@ -49,7 +54,7 @@ If everything is set up _correctly_, you should see your new app running in your
 
 This is one way to run your app — you can also run it directly from within Android Studio and Xcode respectively.
 
-## Step 3: Modifying your App
+## Step 4: Modifying your App
 
 Now that you have successfully run the app, let's modify it.
 
