@@ -24,6 +24,7 @@ import {
   TouchableOpacity,
   Image
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import {
   Colors,
@@ -76,16 +77,33 @@ function App(): React.JSX.Element {
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
-  const handleCountryPress = (country) => {
+  const handleCountryPress = async (country) => {
     setSelectedCountry(country);
     setIsModalVisible(true);
+    try {
+      await AsyncStorage.setItem('selectedCountry', JSON.stringify(country));
+    } catch (error) {
+      // Error saving data
+      console.error('AsyncStorage error: ', error.message);
+    }
   };
 
   // const state = useSelector((state) => state);
   const c = useSelector((state) => state.countries);
   useEffect(() => {
     dispatch(fetchCountries());
-    console.log('Countries from Redux:', c.countries);
+    const getSelectedCountry = async () => {
+      try {
+        const savedCountry = await AsyncStorage.getItem('selectedCountry');
+        if (savedCountry !== null) {
+          setSelectedCountry(JSON.parse(savedCountry));
+        }
+      } catch (error) {
+        // Error retrieving data
+        console.error('AsyncStorage error: ', error.message);
+      }
+    };
+    getSelectedCountry();
   }, []);
 
  
