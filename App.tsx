@@ -7,7 +7,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import type {PropsWithChildren} from 'react';
+import type { PropsWithChildren } from 'react';
 import { Provider } from 'react-redux';
 import store from './store/configureStore';
 import {
@@ -22,9 +22,11 @@ import {
   View,
   Modal,
   TouchableOpacity,
-  Image
+  Image,
+  ActivityIndicator,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+// import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 import {
   Colors,
@@ -44,7 +46,7 @@ type SectionProps = PropsWithChildren<{
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 
-function Section({children, title}: SectionProps): React.JSX.Element {
+function Section({ children, title }: SectionProps): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
   return (
     <View style={styles.sectionContainer}>
@@ -76,108 +78,112 @@ function App(): React.JSX.Element {
 
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const handleCountryPress = async (country) => {
     setSelectedCountry(country);
     setIsModalVisible(true);
-    try {
-      await AsyncStorage.setItem('selectedCountry', JSON.stringify(country));
-    } catch (error) {
-      // Error saving data
-      console.error('AsyncStorage error: ', error.message);
-    }
+    // try {
+    //   await AsyncStorage.setItem('selectedCountry', JSON.stringify(country));
+    // } catch (error) {
+    //   // Error saving data
+    //   console.error('AsyncStorage error: ', error.message);
+    // }
   };
 
   // const state = useSelector((state) => state);
   const c = useSelector((state) => state.countries);
-  useEffect(() => {
-    dispatch(fetchCountries());
-    const getSelectedCountry = async () => {
-      try {
-        const savedCountry = await AsyncStorage.getItem('selectedCountry');
-        if (savedCountry !== null) {
-          setSelectedCountry(JSON.parse(savedCountry));
-        }
-      } catch (error) {
-        // Error retrieving data
-        console.error('AsyncStorage error: ', error.message);
-      }
-    };
-    getSelectedCountry();
+  useEffect(async () => {
+    setIsLoading(true);
+    await dispatch(fetchCountries());
+    setIsLoading(false);
+    // const getSelectedCountry = async () => {
+    //   try {
+    //     const savedCountry = await AsyncStorage.getItem('selectedCountry');
+    //     if (savedCountry !== null) {
+    //       setSelectedCountry(JSON.parse(savedCountry));
+    //     }
+    //   } catch (error) {
+    //     // Error retrieving data
+    //     console.error('AsyncStorage error: ', error.message);
+    //   }
+    // };
+    // getSelectedCountry();
   }, []);
 
- 
+
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
+
   return (
     <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <Modal
-  animationType="slide"
-  transparent={true}
-  visible={isModalVisible}
-  onRequestClose={() => setIsModalVisible(false)}
->
-  <View style={styles.modalView}>
-  <Image 
-    source={{ uri: selectedCountry?.flag }} 
-    style={styles.flagImage}
-    resizeMode="contain"
-  />
-    <Text style={styles.modalText}>Country: {selectedCountry?.name}</Text>
-    <Text style={styles.modalText}>Code: {selectedCountry?.code}</Text>
-    <Text style={styles.modalText}>Capital: {selectedCountry?.capital}</Text>
-    <Text style={styles.modalText}>Population: {selectedCountry?.population}</Text>
-    <Text style={styles.modalText}>Region: {selectedCountry?.region}</Text>
-    <TouchableOpacity
-      style={styles.buttonClose}
-      onPress={() => setIsModalVisible(false)}
-    >
-      <Text style={styles.textStyle}>Close</Text>
-    </TouchableOpacity>
-  </View>
-</Modal>
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="Countries Information">
-          <FlatList
-             data={c.countries}
-              keyExtractor={item => item.code}
-              renderItem={({ item }) => <Country item={item} onPress={handleCountryPress}/>}
-            />
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
+      {isLoading ? (
+        <View style={styles.centeredView}>
+          <ActivityIndicator size="large" color="#000000" />
         </View>
-      </ScrollView>
+      ) : (
+        <><StatusBar
+          barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+          backgroundColor={backgroundStyle.backgroundColor} /><ScrollView
+            contentInsetAdjustmentBehavior="automatic"
+            style={backgroundStyle}>
+            <Header />
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={isModalVisible}
+              onRequestClose={() => setIsModalVisible(false)}
+            >
+              <View style={styles.modalView}>
+                <Image
+                  source={{ uri: selectedCountry?.flag }}
+                  style={styles.flagImage}
+                  resizeMode="contain" />
+                <Text style={styles.modalText}>Country: {selectedCountry?.name}</Text>
+                <Text style={styles.modalText}>Code: {selectedCountry?.code}</Text>
+                <Text style={styles.modalText}>Capital: {selectedCountry?.capital}</Text>
+                <Text style={styles.modalText}>Population: {selectedCountry?.population}</Text>
+                <Text style={styles.modalText}>Region: {selectedCountry?.region}</Text>
+                <TouchableOpacity
+                  style={styles.buttonClose}
+                  onPress={() => setIsModalVisible(false)}
+                >
+                  <Text style={styles.textStyle}>Close</Text>
+                </TouchableOpacity>
+              </View>
+            </Modal>
+            <View
+              style={{
+                backgroundColor: isDarkMode ? Colors.black : Colors.white,
+              }}>
+              <Section title="Step One">
+                Edit <Text style={styles.highlight}>App.tsx</Text> to change this
+                screen and then come back to see your edits.
+              </Section>
+              <Section title="Countries Information">
+                <FlatList
+                  data={c.countries}
+                  keyExtractor={item => item.code}
+                  renderItem={({ item }) => <Country item={item} onPress={handleCountryPress} />} />
+              </Section>
+              <Section title="See Your Changes">
+                <ReloadInstructions />
+              </Section>
+              <Section title="Debug">
+                <DebugInstructions />
+              </Section>
+              <Section title="Learn More">
+                Read the docs to discover what to do next:
+              </Section>
+              <LearnMoreLinks />
+            </View>
+          </ScrollView></>
+      )}
     </SafeAreaView>
   );
 }
-
 
 
 const styles = StyleSheet.create({
@@ -186,6 +192,12 @@ const styles = StyleSheet.create({
     height: 200,
     marginBottom: 20,
     marginHorizontal: 40,
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: "50%",
   },
   modalView: {
     position: 'absolute',

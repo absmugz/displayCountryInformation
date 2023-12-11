@@ -4,11 +4,11 @@ import Country from '../components/Country';
 
 describe('Country Component', () => {
   it('displays modal with country details on press', () => {
-    const mockCountry = { name: 'Canada', code: 'CA' };
+    const mockCountry = { name: 'Republic of South Africa', code: 'ZA' };
     const handlePress = jest.fn();
     const { getByText } = render(<Country item={mockCountry} onPress={handlePress} />);
 
-    fireEvent.press(getByText('Canada (CA)'));
+    fireEvent.press(getByText('Republic of South Africa (ZA)'));
     expect(handlePress).toHaveBeenCalledWith(mockCountry);
   });
 });
