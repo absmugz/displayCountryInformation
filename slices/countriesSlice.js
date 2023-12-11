@@ -8,8 +8,12 @@ export const fetchCountries = createAsyncThunk(
     const response = await axios.get('https://restcountries.com/v3.1/all');
     console.log('response from api data', response.data)
     return response.data.map(country => ({
-      name: country.name.common,
-      code: country.cca2,
+        name: country.name.common,
+        code: country.cca2,
+        capital: country.capital ? country.capital[0] : 'N/A', 
+        population: country.population,
+        flag: country.flags.png,
+        region: country.region,
     }));
   }
 );

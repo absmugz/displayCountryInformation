@@ -16,11 +16,13 @@ import {
   ScrollView,
   StatusBar,
   StyleSheet,
+  Dimensions,
   Text,
   useColorScheme,
   View,
   Modal,
-  TouchableOpacity
+  TouchableOpacity,
+  Image
 } from 'react-native';
 
 import {
@@ -37,6 +39,9 @@ import { fetchCountries } from './slices/countriesSlice';
 type SectionProps = PropsWithChildren<{
   title: string;
 }>;
+
+const screenWidth = Dimensions.get('window').width;
+const screenHeight = Dimensions.get('window').height;
 
 function Section({children, title}: SectionProps): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
@@ -88,13 +93,6 @@ function App(): React.JSX.Element {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
-
-  const countries = [
-    { name: 'United States', code: 'US' },
-    { name: 'Canada', code: 'CA' },
-  ];
-  
-
   return (
     <SafeAreaView style={backgroundStyle}>
       <StatusBar
@@ -113,8 +111,16 @@ function App(): React.JSX.Element {
   onRequestClose={() => setIsModalVisible(false)}
 >
   <View style={styles.modalView}>
+  <Image 
+    source={{ uri: selectedCountry?.flag }} 
+    style={styles.flagImage}
+    resizeMode="contain"
+  />
     <Text style={styles.modalText}>Country: {selectedCountry?.name}</Text>
     <Text style={styles.modalText}>Code: {selectedCountry?.code}</Text>
+    <Text style={styles.modalText}>Capital: {selectedCountry?.capital}</Text>
+    <Text style={styles.modalText}>Population: {selectedCountry?.population}</Text>
+    <Text style={styles.modalText}>Region: {selectedCountry?.region}</Text>
     <TouchableOpacity
       style={styles.buttonClose}
       onPress={() => setIsModalVisible(false)}
@@ -157,12 +163,22 @@ function App(): React.JSX.Element {
 
 
 const styles = StyleSheet.create({
+  flagImage: {
+    width: 300,
+    height: 200,
+    marginBottom: 20,
+    marginHorizontal: 40,
+  },
   modalView: {
-    margin: 20,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: screenWidth,
+    height: screenHeight,
     backgroundColor: "white",
-    borderRadius: 20,
-    padding: 35,
-    alignItems: "center",
+    justifyContent: 'center',
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -174,13 +190,14 @@ const styles = StyleSheet.create({
   },
   modalText: {
     marginBottom: 15,
-    textAlign: "center"
+    marginHorizontal: 40,
   },
   buttonClose: {
     backgroundColor: "#2196F3",
     borderRadius: 20,
     padding: 10,
-    elevation: 2
+    elevation: 2,
+    marginHorizontal: 40,
   },
   textStyle: {
     color: "white",
