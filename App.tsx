@@ -131,7 +131,7 @@ function App(): React.JSX.Element {
             Edit <Text style={styles.highlight}>App.tsx</Text> to change this
             screen and then come back to see your edits.
           </Section>
-          <Section title="Sample Country">
+          <Section title="Countries Information">
           <FlatList
              data={c.countries}
               keyExtractor={item => item.code}
