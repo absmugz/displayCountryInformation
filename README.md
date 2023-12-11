@@ -21,7 +21,7 @@ yarn start
 
 ```bash
 
-# run test
+# Running tests
 npm test
 
 ```
